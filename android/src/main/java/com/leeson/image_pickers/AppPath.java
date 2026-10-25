@@ -14,10 +14,11 @@ import java.io.IOException;
 public class AppPath {
     private Context context;
     private String packageName;
+
     public AppPath(Context context) {
         this.context = context;
         packageName = context.getPackageName();
-        packageName = packageName.substring(packageName.lastIndexOf(".")+1);
+        packageName = packageName.substring(packageName.lastIndexOf(".") + 1);
     }
 
     public String getPackageName() {
@@ -25,119 +26,99 @@ public class AppPath {
     }
 
     /**
-     *
-     * @return  sd/->/android/data/packageName/files/
+     * 临时缓存根目录：context.getCacheDir()/pickers/
+     */
+    private String getTempRootPath() {
+        File root = new File(context.getCacheDir(), "pickers");
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        return root.getAbsolutePath();
+    }
+
+    /**
+     * 在临时根目录下创建（或获取）子目录
+     */
+    private String getTempSubDirPath(String subDirName) {
+        File dir = new File(getTempRootPath(), subDirName);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir.getAbsolutePath();
+    }
+
+    /**
+     * @return 临时缓存根目录 -> /data/data/packageName/cache/pickers/
      */
     public String getAppDirPath() {
-        File privatePicDir = context.getExternalFilesDir(null);
-        if (privatePicDir != null) {
-            return privatePicDir.getAbsolutePath();
-        }
-        return context.getFilesDir().getAbsolutePath();
+        return getTempRootPath();
     }
+
     /**
-     *
-     * @return Q : sd/->/android/data/packageName/files/Download
+     * @return /data/data/packageName/cache/pickers/Download
      */
     public String getAppDownloadDirPath() {
-        File privatePicDir = context.getExternalFilesDir("Download");
-        if (privatePicDir != null) {
-            return privatePicDir.getAbsolutePath();
-        }
-        return context.getFilesDir().getPath();
+        return getTempSubDirPath("Download");
     }
 
     /**
      * 保存的相机图片
      *
-     * @return  sd/->/android/data/packageName/files/DCIM
+     * @return /data/data/packageName/cache/pickers/DCIM
      */
     public String getAppDCIMDirPath() {
-        File picDir = context.getExternalFilesDir("DCIM");
-        if (picDir != null) {
-            return picDir.getAbsolutePath();
-        }
-        return context.getFilesDir().getAbsolutePath();
+        return getTempSubDirPath("DCIM");
     }
+
     /**
      * 保存的图片
      *
-     * @return  sd/->/android/data/packageName/files/Pictures
+     * @return /data/data/packageName/cache/pickers/Pictures
      */
     public String getAppImgDirPath() {
-        File picDir = context.getExternalFilesDir("Pictures");
-        if (picDir != null) {
-            createNomedia(picDir.getAbsolutePath());
-            return picDir.getAbsolutePath();
-        }
-        return context.getFilesDir().getAbsolutePath();
-    }
-
-    private void createNomedia(String path) {
-        File nomedia = new File(path,".nomedia");
-        if (!nomedia.exists()){
-            try {
-                nomedia.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        return getTempSubDirPath("Pictures");
     }
 
     /**
      * 保存的视频文件
      *
-     * @return sd/->/android/data/packageName/files/Movies
+     * @return /data/data/packageName/cache/pickers/Movies
      */
     public String getAppVideoDirPath() {
-
-        File videoDir = context.getExternalFilesDir("Movies");
-        if (videoDir != null) {
-            createNomedia(videoDir.getAbsolutePath());
-            return videoDir.getAbsolutePath();
-        }
-        return context.getFilesDir().getAbsolutePath();
+        return getTempSubDirPath("Movies");
     }
 
     /**
      * 保存的录音文件
-     *只有29 才有 Environment.DIRECTORY_AUDIOBOOKS
-     * @return sd/->/android/data/packageName/files/Audiobooks
+     *
+     * @return /data/data/packageName/cache/pickers/Audiobooks
      */
     public String getAppAudioDirPath() {
-        File audioDir = context.getExternalFilesDir("Audiobooks");
-        if (audioDir != null) {
-            return audioDir.getAbsolutePath();
-        }
-        return context.getFilesDir().getAbsolutePath();
+        return getTempSubDirPath("Audiobooks");
     }
+
     /**
      * 保存的音乐文件
      *
-     * @return sd/->/android/data/packageName/files/Music
+     * @return /data/data/packageName/cache/pickers/Music
      */
     public String getAppMusicDirPath() {
-        File dir = context.getExternalFilesDir("Music");
-        if (dir != null) {
-            return dir.getAbsolutePath();
-        }
-        return context.getFilesDir().getAbsolutePath();
+        return getTempSubDirPath("Music");
     }
 
     /**
      * 保存的text文件
-     * @return sd/->/android/data/packageName/files/Documents
+     *
+     * @return /data/data/packageName/cache/pickers/Documents
      */
     public String getAppDocumentsDirPath() {
-        File dir = context.getExternalFilesDir("Documents");
-        if (dir != null) {
-            return dir.getAbsolutePath();
-        }
-        return context.getFilesDir().getAbsolutePath();
+        return getTempSubDirPath("Documents");
     }
+
     /**
      * 保存的日志文件
-     * @return sd/->/android/data/packageName/files/Documents/logs
+     *
+     * @return /data/data/packageName/cache/pickers/Documents/logs/
      */
     public String getAppLogDirPath() {
         return getAppDocumentsDirPath() + "/logs/";
